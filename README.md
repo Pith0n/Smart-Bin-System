@@ -15,3 +15,6 @@ This project uses IoT technology to monitor bin fill levels in real time using a
 
 ## Code Edits
 in the sensor data code you will need to change the webserver address to you local one, this can be found whn you run your flash server
+
+## Files
+The python server folder can be ran on your desktop/ where ever you are hosting the flash server, The sensor data python file is for the raspberry pi
