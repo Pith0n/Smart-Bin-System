@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js CDN -->
+    <script>
+        async function fetchLatestData() {
+            try {
+                const response = await fetch('/latest_data');
+                const data = await response.json();
+                document.getElementById('sensor-data').textContent = 
+                    data.distance !== null ? `${data.distance} cm` : "No data yet";
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        async function loadChart() {
+            try {
+                const response = await fetch('/latest_data'); // Fetch data from Flask server
+                const data = await response.json();
+                const ctx = document.getElementById('distanceChart').getContext('2d');
+
+                // Assume server sends timestamps and distances arrays
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.timestamps || [],  // X-axis: timestamps
+                        datasets: [{
+                            label: 'Distance (cm)',
+                            data: data.distances || [],  // Y-axis: distance values
+                            borderWidth: 1,
+                            borderColor: 'blue',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Time' }},
+                            y: { title: { display: true, text: 'Distance (cm)' }}
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading chart data:', error);
+            }
+        }
+
+        // Fetch data and load chart every second
+        setInterval(() => {
+            fetchLatestData();
+            loadChart();
+        }, 1000);
+    </script>
+</head>
+<body>
+    <h1>Ultrasonic Sensor Data</h1>
+    <p>Latest Distance: <span id="sensor-data">Loading...</span></p>
+
+    <!-- Canvas for Chart -->
+    <canvas id="distanceChart" width="400" height="200"></canvas>
+</body>
+</html>
